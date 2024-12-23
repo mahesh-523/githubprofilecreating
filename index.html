@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+   <style>
+    body{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile{
+    width: 40vw;
+    background-color:violet;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    align-items: center;
+    justify-content: center;
+    margin: 3vh 0vw;
+    display:none;
+}
+
+.userimgname{
+    width: 80%;
+    height: fit-content;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+.userimgname img{
+    height: 10vh;
+    width: 10vw;
+    background-color: rgb(240, 207, 155);
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+.biodiv{
+    width: 50%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+p{
+    font-size: 20px;
+    margin: 3px;
+}
+a{
+    text-decoration: none;
+    font-size: large;
+}
+
+
+   </style>
+</head>
+<body>
+    <h1>GitHub Profile</h1>
+    <div class="inputs">
+        <input type="text" name="userid" id="userid" required placeholder="Enter the github profile id">
+        <button type="submit" onclick="fetchdata()">Get Profile</button>
+        
+        <!-- for arror -->
+        <p class="error"></p>
+        </div>
+        <!-- for profile  -->
+        <div class="profile" id="profile">
+            <div class="userimgname">
+                <img id="userimg" src="" alt="">
+                <p class="username" id="username">chandra</p>
+            </div>
+            <div class="biodiv">
+                <p id="bio"></p>
+                <p id="repo"></p>
+                <p id="followers"></p                
+                <p id="following"></p>
+                <p id="location"></p>
+                <p id="createdat"></p>
+                <a href="" id="link">goto profile -></a>
+
+            </div>
+        </div>
+        <script>
+          function fetchdata() {
+    let myDiv = document.getElementById('profile');
+
+    let userid = document.getElementById('userid').value;
+    let url = "https://api.github.com/users/" + userid;
+
+    fetch(url)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('User data not found or ID not found');
+        }
+        return response.json();
+    })
+    .then(data => {
+        let userimg = document.getElementById('userimg');
+        let username = document.getElementById('username');
+        let bio = document.getElementById('bio');
+        let repo = document.getElementById('repo');
+        let followers = document.getElementById('followers');
+        let following = document.getElementById('following');
+        let location = document.getElementById('location');
+        let createdat = document.getElementById('createdat');
+        let prolink = document.getElementById('link');
+        myDiv.style.display = "inline"; // Changes the display property to block
+        // Safeguard null elements
+        if (userimg) userimg.src = data.avatar_url || 'default-avatar.png';
+        if (username) username.textContent = data.name || 'No name provided';
+        if (bio) bio.innerHTML = `<strong>BIO : </strong>${data.bio || 'No bio available'}`;
+        if (repo) repo.innerHTML = `<strong>Repositories : </strong>${data.public_repos}`;
+        if (followers) followers.innerHTML = `<strong>Followers : </strong>${data.followers}`;
+        if (following) following.innerHTML = `<strong>Following : </strong>${data.following}`;
+        if (createdat) createdat.innerHTML = `<strong>Created At : </strong>${new Date(data.created_at).toLocaleDateString()}`;
+        if (location) location.innerHTML = `<strong>Updated At : </strong>${new Date(data.updated_at).toLocaleDateString()}`;
+        if (prolink) {
+            prolink.href = data.html_url;
+            prolink.textContent = "GitHub Profile";
+        }
+    })
+    .catch(error => {
+        errormsg(error.message);
+        console.error("Error fetching data:", error);
+    });
+}
+        </script>
+</body>
+</html>
